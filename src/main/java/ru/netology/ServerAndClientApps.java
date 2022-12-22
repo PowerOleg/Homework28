@@ -1,7 +1,7 @@
 package ru.netology;
 
 
-public class ServerApp {
+public class ServerAndClientApps {
     public static void main(String[] args) {
 
 
