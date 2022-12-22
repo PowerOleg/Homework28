@@ -7,65 +7,76 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.Scanner;
 
 public class ServerApp {
-    static String lastCity = "???";
 
-//    public static String word(String word) {
-//        if (word == null) {
-//
-//        }
-//        String lastCity = "???";
-//        return lastCity;
-//    }
     public static void main(String[] args) {
+        ServerThread thread = new ServerThread();
+        MyThread thread2 = new MyThread();
+// doesn't work       thread2.start();
+        thread.start();
+
+    }
+}
+
+class MyThread extends Thread {
+    Scanner scanner = new Scanner(System.in);
+
+    @Override
+    public void run() {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        try (Socket client = new Socket("localhost", 8080);
+             BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+             PrintWriter out = new PrintWriter(client.getOutputStream())) {
+            String serverResponse = in.readLine();
+            System.out.printf("Please enter a word started with the last letter of %s\n", serverResponse);
+            System.out.print(">>");
+            String s = scanner.nextLine();
+            out.println(s);
+            out.flush();
+
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
+}
+
+class ServerThread extends Thread {
+    String lastCity = "???";
+
+    @Override
+    public void run() {
         try (ServerSocket serverSocket = new ServerSocket(8080);
-        /*ServerSocket serverSocket2 = new ServerSocket(8888)*/) {
+                /*ServerSocket serverSocket2 = new ServerSocket(8888)*/) {
             System.out.println("Server has been started");
 
             while (true) {
                 try {
-                    //
                     Socket clientSocket = serverSocket.accept();
 //                    Socket clientSocket2 = serverSocket2.accept();
                     System.out.println("New connection accepted");
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
-                                out.println(lastCity);
-                                lastCity = in.readLine();
-                                String response = "OK";
-                                out.println(response);
-                                out.flush();
+                    try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                         PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
+                        out.println(lastCity);
+                        lastCity = in.readLine();
+                        String response = "OK";
+                        out.println(response);
+                        out.flush();
 
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
 
-                            } catch (IOException e) {
-                            throw new RuntimeException(e);
-                            }
-                        }
-                    }).start();
-
-
-
-//                    new Thread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket2.getInputStream()));
-//                                 PrintWriter out = new PrintWriter(clientSocket2.getOutputStream(), true)) {
-//
-//                                final String request = in.readLine();
-//                                String response = String.format("Hi %s, this is server2, your port is %d", request, clientSocket.getPort());
-//                                out.println(response);
-//                                out.flush();
-//
-//
-//                            } catch (IOException e) {
-//                                throw new RuntimeException(e);
-//                            }
-//                        }
-//                    }).start();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
