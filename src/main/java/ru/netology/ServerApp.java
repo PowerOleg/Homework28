@@ -7,21 +7,21 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.Scanner;
 
 public class ServerApp {
 
     public static void main(String[] args) {
         ServerThread thread = new ServerThread();
-        MyThread thread2 = new MyThread();
+        ClientThread thread2 = new ClientThread();
+        ClientThread thread3 = new ClientThread();
         thread.start();
         thread2.start();
-
+        thread3.start();
     }
 }
 
-class MyThread extends Thread {
+class ClientThread extends Thread {
     Scanner scanner = new Scanner(System.in);
 
     @Override
