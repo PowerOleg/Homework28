@@ -13,14 +13,13 @@ public class ClientApp {
         Scanner scanner = new Scanner(System.in);
         try (Socket clientSocket = new Socket("localhost", 8080);
              BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-             PrintWriter out = new PrintWriter(clientSocket.getOutputStream())) {
+             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
 
             String serverResponse = in.readLine();
             System.out.printf("Please enter a word started with the last letter of %s\n", serverResponse);
             System.out.print(">>");
             String s = scanner.nextLine();
             out.println(s);
-            out.flush();
 
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);

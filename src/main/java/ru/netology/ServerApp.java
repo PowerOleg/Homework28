@@ -15,8 +15,8 @@ public class ServerApp {
     public static void main(String[] args) {
         ServerThread thread = new ServerThread();
         MyThread thread2 = new MyThread();
-// doesn't work       thread2.start();
         thread.start();
+        thread2.start();
 
     }
 }
@@ -26,23 +26,15 @@ class MyThread extends Thread {
 
     @Override
     public void run() {
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
         try (Socket client = new Socket("localhost", 8080);
              BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-             PrintWriter out = new PrintWriter(client.getOutputStream())) {
+             PrintWriter out = new PrintWriter(client.getOutputStream(), true)) {
             String serverResponse = in.readLine();
             System.out.printf("Please enter a word started with the last letter of %s\n", serverResponse);
             System.out.print(">>");
             String s = scanner.nextLine();
             out.println(s);
-            out.flush();
 
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -71,7 +63,6 @@ class ServerThread extends Thread {
                         lastCity = in.readLine();
                         String response = "OK";
                         out.println(response);
-                        out.flush();
 
                     } catch (IOException e) {
                         throw new RuntimeException(e);
