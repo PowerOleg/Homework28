@@ -9,10 +9,20 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class ServerApp {
+    static String lastCity = "???";
+
+//    public static String word(String word) {
+//        if (word == null) {
+//
+//        }
+//        String lastCity = "???";
+//        return lastCity;
+//    }
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(8080);
         /*ServerSocket serverSocket2 = new ServerSocket(8888)*/) {
             System.out.println("Server has been started");
+
             while (true) {
                 try {
                     //
@@ -24,9 +34,9 @@ public class ServerApp {
                         public void run() {
                             try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
-
-                                final String request = in.readLine();
-                                String response = String.format("Hi %s, your port is %d", request, clientSocket.getPort());
+                                out.println(lastCity);
+                                lastCity = in.readLine();
+                                String response = "OK";
                                 out.println(response);
                                 out.flush();
 
