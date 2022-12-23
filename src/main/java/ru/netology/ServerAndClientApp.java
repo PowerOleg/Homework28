@@ -11,7 +11,7 @@ import java.util.Scanner;
 public class ServerAndClientApp {
 
     public static void main(String[] args) {
-        ServerThread thread = new ServerThread();
+        Thread thread = new Thread(new ServerThread());
         ClientThread thread2 = new ClientThread();
         ClientThread thread3 = new ClientThread();
         thread.start();
@@ -33,20 +33,19 @@ class ClientThread extends Thread {
             System.out.print(">>");
             String s = scanner.nextLine();
             out.println(s);
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 }
 
-class ServerThread extends Thread {
+class ServerThread implements Runnable {
     private String lastCity = "???";
     public boolean checkWord(String word) {
         if (lastCity.equals("???")) {
             lastCity = word;
             return true;
-        } else if (lastCity.endsWith(String.valueOf(word.charAt(0)))) {
+        } else if (lastCity.toLowerCase().endsWith(String.valueOf(word.toLowerCase().charAt(0)))) {
             lastCity = word;
             return true;
         }
@@ -60,8 +59,9 @@ class ServerThread extends Thread {
 
             while (true) {
                 try (Socket clientSocket = serverSocket.accept();
-                     BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                     PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
+                    BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                    PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
+
                     System.out.println("New connection accepted");
                     String request = "";
                     String response = "NOT OK";
@@ -71,7 +71,6 @@ class ServerThread extends Thread {
                     if (checkWord(request)) response = "OK";
                     out.println(response);
                     System.out.println(request+" is "+response);
-
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
