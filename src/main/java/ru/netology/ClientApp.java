@@ -21,8 +21,6 @@ public class ClientApp {
             String s = scanner.nextLine();
             out.println(s);
 
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

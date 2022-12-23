@@ -1,3 +1,4 @@
+//переделать под интерфейс Runnable
 package ru.netology;
 
 
@@ -16,8 +17,8 @@ public class ServerApp {
         ClientThread thread2 = new ClientThread();
         ClientThread thread3 = new ClientThread();
         thread.start();
-        thread2.start();
-        thread3.start();
+//        thread2.start();
+//        thread3.start();
     }
 }
 
@@ -39,7 +40,6 @@ class ClientThread extends Thread {
             throw new RuntimeException(e);
         }
 
-
     }
 }
 
@@ -48,25 +48,18 @@ class ServerThread extends Thread {
 
     @Override
     public void run() {
-        try (ServerSocket serverSocket = new ServerSocket(8080);
-                /*ServerSocket serverSocket2 = new ServerSocket(8888)*/) {
+        try (ServerSocket serverSocket = new ServerSocket(8080)) {
             System.out.println("Server has been started");
 
             while (true) {
-                try {
-                    Socket clientSocket = serverSocket.accept();
-//                    Socket clientSocket2 = serverSocket2.accept();
+                try (Socket clientSocket = serverSocket.accept();
+                     BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                     PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
                     System.out.println("New connection accepted");
-                    try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                         PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
-                        out.println(lastCity);
-                        lastCity = in.readLine();
-                        String response = "OK";
-                        out.println(response);
-
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+                    out.println(lastCity);
+                    lastCity = in.readLine();
+                    String response = "OK";
+                    out.println(response);
 
                 } catch (IOException e) {
                     throw new RuntimeException(e);
