@@ -1,6 +1,4 @@
-//переделать под интерфейс Runnable
 package ru.netology;
-
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,15 +8,15 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class ServerApp {
+public class ServerAndClientApp {
 
     public static void main(String[] args) {
         ServerThread thread = new ServerThread();
         ClientThread thread2 = new ClientThread();
         ClientThread thread3 = new ClientThread();
         thread.start();
-//        thread2.start();
-//        thread3.start();
+        thread2.start();
+        thread3.start();
     }
 }
 
@@ -28,10 +26,10 @@ class ClientThread extends Thread {
     @Override
     public void run() {
         try (Socket client = new Socket("localhost", 8080);
-             BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-             PrintWriter out = new PrintWriter(client.getOutputStream(), true)) {
+            BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            PrintWriter out = new PrintWriter(client.getOutputStream(), true)) {
             String serverResponse = in.readLine();
-            System.out.printf("Please enter a word started with the last letter of %s\n", serverResponse);
+            System.out.printf("Please enter a word starting with the last letter of %s\n", serverResponse);
             System.out.print(">>");
             String s = scanner.nextLine();
             out.println(s);
@@ -39,12 +37,21 @@ class ClientThread extends Thread {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 }
 
 class ServerThread extends Thread {
-    String lastCity = "???";
+    private String lastCity = "???";
+    public boolean checkWord(String word) {
+        if (lastCity.equals("???")) {
+            lastCity = word;
+            return true;
+        } else if (lastCity.endsWith(String.valueOf(word.charAt(0)))) {
+            lastCity = word;
+            return true;
+        }
+        return false;
+    }
 
     @Override
     public void run() {
@@ -56,19 +63,21 @@ class ServerThread extends Thread {
                      BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                      PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
                     System.out.println("New connection accepted");
+                    String request = "";
+                    String response = "NOT OK";
+
                     out.println(lastCity);
-                    lastCity = in.readLine();
-                    String response = "OK";
+                    request = in.readLine();
+                    if (checkWord(request)) response = "OK";
                     out.println(response);
+                    System.out.println(request+" is "+response);
 
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 }

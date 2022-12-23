@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.Scanner;
 
 public class ClientApp {
@@ -20,6 +19,8 @@ public class ClientApp {
             System.out.print(">>");
             String s = scanner.nextLine();
             out.println(s);
+            String serverResponse2 = in.readLine();
+            System.out.println(serverResponse2);
 
         } catch (IOException e) {
             throw new RuntimeException(e);
